@@ -5,13 +5,14 @@ using UnityEngine.Networking;
 using System.Text;
 using Newtonsoft.Json;
 using System;
+using UnityEditor.PackageManager.Requests;
+using Unity.VisualScripting;
 
 public class GameAPI : MonoBehaviour
 {
-    private string baseUrl = "http://locationhost:4000/api";            // Node.js 서버의 URL
+    private string baseUrl = "http://localhost:4000/api";                   //Node.js 서버의 URL
 
-    // 플레이어 레지스터
-
+    //플레이어 레지스터
     public IEnumerator RegisterPlayer(string playerName, string password)
     {
         var requestData = new { name = playerName, password = password };
@@ -38,8 +39,7 @@ public class GameAPI : MonoBehaviour
         }
     }
 
-    // 플레이어 로그인 메서드
-
+    //플레이어 로그인 메서드
     public IEnumerator LoginPlayer(string playerName, string password, Action<PlayerModel> onSuccess)
     {
         var requestData = new { name = playerName, password = password };
@@ -60,22 +60,22 @@ public class GameAPI : MonoBehaviour
             }
             else
             {
-                // 응답을 처리하여 PlayerModel 생성
+                //응답을 처리하여 PlayerModel 생성
                 string responseBody = request.downloadHandler.text;
 
                 try
                 {
                     var responseData = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseBody);
 
-                    // 서버 응답에서 PlayerModel 생성
-                    PlayerModel playerModel = new PlayerModel(responseData["playerName"].ToString())
+                    //서버 응답에서 PlayerModel 생성
+                    PlayerModel playerMode = new PlayerModel(responseData["playerName"].ToString())
                     {
                         metal = Convert.ToInt32(responseData["metal"]),
                         crystal = Convert.ToInt32(responseData["crystal"]),
                         deuterium = Convert.ToInt32(responseData["deuterium"]),
                         Planets = new List<PlanetModel>()
                     };
-                    onSuccess?.Invoke(playerModel);
+                    onSuccess?.Invoke(playerMode);
                     Debug.Log("Login successful");
                 }
                 catch (Exception ex)
@@ -83,7 +83,8 @@ public class GameAPI : MonoBehaviour
                     Debug.LogError($"Error processing login responce : {ex.Message}");
                 }
             }
-            
         }
+
     }
+
 }
